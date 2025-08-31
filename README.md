@@ -7,7 +7,7 @@
 </head>
 <body>
     <center><h1>Welcome to my profile</h1>
-    <img src="/FSD-CSE12/image.jpg " height="200">
+    <img src="https://upload.wikimedia.org/wikipedia/en/9/98/Dr._A.P.J._Abdul_Kalam_Technical_University_logo.png " height="200">
 
 <h2>Name : Abhinav Gupta</h2>
 <h2>Branch :CSE</h2>

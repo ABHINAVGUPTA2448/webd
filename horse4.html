@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Running Horse in Desert Night</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.js"></script>
+  <script>
+    // Scene, Camera, Renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Night sky with stars
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 2000;
+    const positions = [];
+    for (let i = 0; i < starCount; i++) {
+      positions.push((Math.random() - 0.5) * 2000);
+      positions.push((Math.random() - 0.5) * 2000);
+      positions.push((Math.random() - 0.5) * 2000);
+    }
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff });
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    // Moon
+    const moonGeometry = new THREE.SphereGeometry(5, 32, 32);
+    const moonMaterial = new THREE.MeshBasicMaterial({ color: 0xffffcc });
+    const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+    moon.position.set(50, 40, -100);
+    scene.add(moon);
+
+    // Desert ground
+    const groundGeometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+    const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x8b6c42, wireframe: false });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    // Light
+    const ambientLight = new THREE.AmbientLight(0x404040, 2); 
+    scene.add(ambientLight);
+    const moonLight = new THREE.PointLight(0xffffff, 1);
+    moonLight.position.set(50, 40, -100);
+    scene.add(moonLight);
+
+    // Load horse model (GLTF)
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+      "https://threejs.org/examples/models/gltf/Horse.glb", // free 3D horse model
+      function (gltf) {
+        const horse = gltf.scene;
+        horse.scale.set(0.05, 0.05, 0.05);
+        horse.position.set(0, 0, 0);
+        scene.add(horse);
+
+        // Animate horse movement across desert
+        let direction = 1;
+        function animateHorse() {
+          horse.position.x += 0.1 * direction;
+          if (horse.position.x > 50 || horse.position.x < -50) {
+            direction *= -1;
+            horse.rotation.y += Math.PI; // flip direction
+          }
+        }
+
+        // Render loop
+        function animate() {
+          requestAnimationFrame(animate);
+          animateHorse();
+          stars.rotation.y += 0.0005;
+          renderer.render(scene, camera);
+        }
+        animate();
+      },
+      undefined,
+      function (error) { console.error(error); }
+    );
+
+    camera.position.set(0, 10, 30);
+
+    // Resize handling
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

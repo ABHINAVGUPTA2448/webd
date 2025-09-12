@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running Horse in Desert Night</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    /* Night sky with stars */
+    .sky {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s infinite ease-in-out alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
+
+    /* Moon */
+    .moon {
+      position: absolute;
+      top: 50px;
+      right: 100px;
+      width: 100px;
+      height: 100px;
+      background: #f5f3ce;
+      border-radius: 50%;
+      box-shadow: 0 0 40px #f5f3ce;
+    }
+
+    /* Desert ground */
+    .desert {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(to top, #3d2b1f, #5c4033);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* Moving dunes */
+    .dune {
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+      background: url('https://i.ibb.co/5K6YfQw/dune.png') repeat-x;
+      background-size: cover;
+      animation: moveDunes 20s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes moveDunes {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Horse animation (using GIF/PNG sprite) */
+    .horse {
+      position: absolute;
+      bottom: 200px;
+      left: 10%;
+      width: 300px;
+      z-index: 3;
+    }
+
+    .horse img {
+      width: 100%;
+      animation: bounce 0.5s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="sky">
+    <div class="moon"></div>
+  </div>
+
+  <!-- Random stars -->
+  <script>
+    for (let i = 0; i < 100; i++) {
+      let star = document.createElement("div");
+      star.className = "star";
+      star.style.top = Math.random() * window.innerHeight + "px";
+      star.style.left = Math.random() * window.innerWidth + "px";
+      document.querySelector(".sky").appendChild(star);
+    }
+  </script>
+
+  <div class="desert">
+    <div class="dune"></div>
+  </div>
+
+  <!-- Running Horse (GIF for realistic animation) -->
+  <div class="horse">
+    <img src="https://i.ibb.co/L56h2Bf/running-horse.gif" alt="Running Black Horse">
+  </div>
+</body>
+</html>

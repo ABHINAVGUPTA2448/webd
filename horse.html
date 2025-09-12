@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Running Black Horse in Desert</title>
+<style>
+  :root{
+    --sky-top:#87CEEB;      /* light sky blue */
+    --sky-bottom:#FFE5A3;   /* warm near-horizon */
+    --sand:#E9C46A;
+    --dune:#D9B25A;
+    --sun:#FFD36E;
+    --horse:#101010;        /* black horse */
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;overflow:hidden;font-family:system-ui,Segoe UI,Arial}
+
+  /* Background sky */
+  .scene{
+    position:relative;
+    width:100%;
+    height:100%;
+    background:linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 65%);
+  }
+
+  /* Sun */
+  .sun{
+    position:absolute;
+    right:8vw; top:8vh;
+    width:14vmin; height:14vmin; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff8d6 0 35%, var(--sun) 36% 70%, #ffcb5a 71% 100%);
+    filter:blur(0.2vmin) drop-shadow(0 0 2vmin #ffd36eaa);
+  }
+
+  /* Ground */
+  .ground{
+    position:absolute; inset:auto 0 0 0; height:40vh; background:var(--sand);
+    overflow:hidden;
+  }
+  /* Dunes using layered gradients */
+  .ground::before, .ground::after{
+    content:""; position:absolute; inset:auto -10vw 0 -10vw; height:35vh;
+    background:
+      radial-gradient(55vw 20vh at 20vw 8vh, var(--dune) 0 60%, transparent 61%) ,
+      radial-gradient(60vw 22vh at 70vw 10vh, #d4aa53 0 60%, transparent 61%);
+    opacity:.65;
+  }
+  .ground::after{
+    height:28vh; bottom:6vh; opacity:.45;
+    background:
+      radial-gradient(45vw 16vh at 40vw 6vh, var(--dune) 0 60%, transparent 61%) ,
+      radial-gradient(40vw 14vh at 80vw 5vh, #d1a44c 0 60%, transparent 61%);
+  }
+
+  /* Horse path animation (moves across the screen and loops) */
+  .track{
+    position:absolute; left:-25vmin; bottom:14vh; width:25vmin; height:20vmin;
+    animation: runAcross 9s linear infinite;
+  }
+  @keyframes runAcross{
+    0%   { transform:translateX(-20vw) }
+    100% { transform:translateX(calc(100vw + 40vmin)) }
+  }
+
+  /* Subtle up-down bobbing */
+  .horse{
+    position:absolute; bottom:0; left:0; width:25vmin; height:16vmin;
+    transform-origin:50% 100%;
+    animation:bob 0.7s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0) }
+    50%    { transform:translateY(-0.8vmin) }
+  }
+
+  /* Horse parts */
+  .body{
+    position:absolute; left:5vmin; bottom:6.8vmin;
+    width:14vmin; height:6.5vmin; background:var(--horse); border-radius:3vmin 4vmin 2vmin 2vmin;
+    box-shadow:inset -0.3vmin -0.3vmin 0 0 #0006;
+  }
+  .neck{
+    position:absolute; left:15vmin; bottom:9.5vmin;
+    width:3.2vmin; height:6vmin; background:var(--horse);
+    transform:skewX(-12deg) rotate(-8deg); border-radius:2vmin;
+  }
+  .head{
+    position:absolute; left:16.6vmin; bottom:13vmin;
+    width:5.4vmin; height:3.6vmin; background:var(--horse);
+    border-radius:1.2vmin 2.2vmin 1.2vmin 1.2vmin;
+    transform:skewX(-8deg);
+  }
+  .ear{
+    position:absolute; left:19.6vmin; bottom:16.2vmin;
+    width:1vmin; height:1.8vmin; background:var(--horse);
+    transform:rotate(10deg); border-radius:0.3vmin 0.3vmin 0 0;
+  }
+  .tail{
+    position:absolute; left:4.2vmin; bottom:10.1vmin;
+    width:1.3vmin; height:6.5vmin; background:var(--horse);
+    transform-origin:50% 0%;
+    border-radius:0.6vmin;
+    animation:tail 0.7s ease-in-out infinite;
+  }
+  .tail::after{
+    content:""; position:absolute; left:-0.6vmin; bottom:-3.5vmin;
+    width:2.5vmin; height:6vmin; background:var(--horse);
+    border-radius:0 0 2vmin 2vmin; filter:blur(0.1vmin);
+  }
+  @keyframes tail{
+    0%,100%{ transform:rotate(18deg) }
+    50%    { transform:rotate(-6deg) }
+  }
+
+  /* Legs: each leg is an upper (div) and lower (::after) segment */
+  .leg{
+    position:absolute; width:1.1vmin; height:6.6vmin; background:var(--horse);
+    bottom:3.6vmin; transform-origin:50% 5%;
+  }
+  .leg::after{
+    content:""; position:absolute; left:-0.05vmin; top:5.6vmin;
+    width:1.2vmin; height:6vmin; background:var(--horse);
+    transform-origin:50% 5%; border-radius:0.4vmin;
+  }
+
+  /* Leg positions (LF=left front, RF=right front, LR=left rear, RR=right rear) */
+  .lf{ left:15.2vmin; animation:front 0.7s cubic-bezier(.55,.05,.55,.95) infinite; }
+  .rf{ left:12.8vmin; animation:front 0.7s cubic-bezier(.55,.05,.55,.95) infinite reverse; }
+  .lr{ left:8.2vmin;  animation:rear  0.7s cubic-bezier(.55,.05,.55,.95) infinite; }
+  .rr{ left:6.0vmin;  animation:rear  0.7s cubic-bezier(.55,.05,.55,.95) infinite reverse; }
+
+  /* Front leg gait */
+  @keyframes front{
+    0%   { transform:rotate(18deg) }
+    25%  { transform:rotate(-10deg) }
+    50%  { transform:rotate(-22deg) }
+    75%  { transform:rotate(6deg) }
+    100% { transform:rotate(18deg) }
+  }
+  .lf::after, .rf::after{
+    animation:front-lower 0.7s ease-in-out infinite;
+  }
+  @keyframes front-lower{
+    0%   { transform:rotate(-10deg) }
+    25%  { transform:rotate(18deg) }
+    50%  { transform:rotate(26deg) }
+    75%  { transform:rotate(-8deg) }
+    100% { transform:rotate(-10deg) }
+  }
+
+  /* Rear leg gait */
+  @keyframes rear{
+    0%   { transform:rotate(-12deg) }
+    25%  { transform:rotate(10deg) }
+    50%  { transform:rotate(22deg) }
+    75%  { transform:rotate(-8deg) }
+    100% { transform:rotate(-12deg) }
+  }
+  .lr::after, .rr::after{
+    animation:rear-lower 0.7s ease-in-out infinite;
+  }
+  @keyframes rear-lower{
+    0%   { transform:rotate(24deg) }
+    25%  { transform:rotate(-6deg) }
+    50%  { transform:rotate(-18deg) }
+    75%  { transform:rotate(10deg) }
+    100% { transform:rotate(24deg) }
+  }
+
+  /* Mane */
+  .mane{
+    position:absolute; left:14.6vmin; bottom:12vmin;
+    width:3.5vmin; height:3vmin; background:var(--horse);
+    clip-path:polygon(0% 0%, 100% 0%, 70% 100%, 0% 80%);
+    filter:blur(0.2vmin);
+    animation:mane 0.7s ease-in-out infinite;
+  }
+  @keyframes mane{
+    0%,100%{ transform:skewX(-4deg) }
+    50%    { transform:skewX(6deg) }
+  }
+
+  /* Shadow on sand */
+  .shadow{
+    position:absolute; left:2vmin; bottom:2.6vmin; width:20vmin; height:2.6vmin;
+    background:radial-gradient(60% 70% at 50% 50%, #0006 0 60%, transparent 70%);
+    filter:blur(0.6vmin);
+    animation:shadow-bob 0.7s ease-in-out infinite;
+  }
+  @keyframes shadow-bob{
+    0%,100%{ transform:scaleX(1) translateY(0) }
+    50%    { transform:scaleX(1.05) translateY(0.2vmin) }
+  }
+
+  /* Dust puffs */
+  .dust{
+    position:absolute; bottom:2.8vmin; left:3vmin; width:0.8vmin; height:0.8vmin; border-radius:50%;
+    background:#b5893aAA; filter:blur(0.1vmin);
+    animation:dust 1.4s linear infinite;
+  }
+  .dust:nth-child(2){ left:1.5vmin; animation-delay:.2s }
+  .dust:nth-child(3){ left:0vmin;   animation-delay:.4s }
+  @keyframes dust{
+    0%   { transform:translateX(0) translateY(0) scale(1); opacity:.9 }
+    100% { transform:translateX(-12vmin) translateY(-4vmin) scale(0.2); opacity:0 }
+  }
+
+  /* A tiny “shimmer” heat haze near horizon for life */
+  .haze{
+    position:absolute; left:0; right:0; bottom:34vh; height:2.2vh;
+    background:linear-gradient(to bottom, transparent, #fff4 40%, transparent 80%);
+    animation:haze 3s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes haze{
+    0%,100%{ filter:blur(0.8px); opacity:.25 }
+    50%    { filter:blur(1.6px); opacity:.5 }
+  }
+</style>
+</head>
+<body>
+  <div class="scene">
+    <div class="sun"></div>
+    <div class="haze"></div>
+
+    <div class="ground"></div>
+
+    <!-- Horse moving across the desert -->
+    <div class="track" aria-label="Running black horse">
+      <div class="horse">
+        <div class="shadow"></div>
+        <div class="body"></div>
+        <div class="mane"></div>
+        <div class="neck"></div>
+        <div class="head"></div>
+        <div class="ear"></div>
+        <div class="tail"></div>
+
+        <div class="leg lf"></div>
+        <div class="leg rf"></div>
+        <div class="leg lr"></div>
+        <div class="leg rr"></div>
+
+        <!-- Dust puffs spawned near hind legs -->
+        <div class="dust"></div>
+        <div class="dust"></div>
+        <div class="dust"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

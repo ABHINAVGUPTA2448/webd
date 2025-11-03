@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two Blocks Example</title>
+  <style>
+    
+    #parent {
+      display: flex;           
+      gap: 30px;               
+      margin: 20px;
+    }
+
+    #block1 {
+      background-color: aqua;
+      padding: 20px;
+      flex: 1;                
+      border-radius: 10px;
+    }
+
+
+    #block2 {
+      background-color: red;
+      padding: 20px;
+      flex: 1;
+      border-radius: 10px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+    p {
+      text-align: justify;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="parent">
+    <div id="block1">
+      <h2>Block 1 </h2>
+      <p>
+        This is the first block with an aqua background color. 
+        The paragraph text is justified so that it aligns neatly on both sides.
+      </p>
+    </div>
+
+    <div id="block2">
+      <h2>Block 2 </h2>
+      <p>
+        This is the second block with a red background color. 
+        It also uses justified alignment for the paragraph content.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

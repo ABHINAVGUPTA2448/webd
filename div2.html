@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two Blocks Only CSS</title>
+  <style>
+    body {
+      display: flex;          /* make blocks side by side */
+      gap: 30px;              /* spacing between blocks */
+      margin: 20px;
+      font-family: Arial, sans-serif;
+    }
+
+    body::before,
+    body::after {
+      content: "";            /* create pseudo-blocks */
+      flex: 1;                /* equal width */
+      padding: 20px;
+      border-radius: 10px;
+      display: block;
+      text-align: justify;
+      font-size: 16px;
+    }
+
+    body::before {
+      background-color: aqua;
+      content: "Block 1 Heading\n\nThis is the first block with an aqua background color. The paragraph text is justified so that it aligns neatly on both sides.";
+      white-space: pre-line; /* allow line breaks from \n */
+    }
+
+    body::after {
+      background-color: skyblue;
+      content: "Block 2 Heading\n\nThis is the second block with a sky blue background color. It also uses justified alignment for the paragraph content.";
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+</body>
+</html>
